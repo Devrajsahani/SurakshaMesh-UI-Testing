@@ -65,7 +65,7 @@ export default function Home() {
           </motion.div>
 
           {/* Navigation Cards */}
-          <div className="grid md:grid-cols-2 gap-8 mb-20">
+          <div className="grid md:grid-cols-2 gap-8 mb-20 items-stretch">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}

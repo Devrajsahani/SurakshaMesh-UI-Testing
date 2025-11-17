@@ -9,6 +9,7 @@ import CCTVGrid from '@/components/CCTVGrid';
 import HeatMap3D from '@/components/HeatMap3D';
 import BlockchainReceipts from '@/components/BlockchainReceipts';
 import AnomalyFeed from '@/components/AnomalyFeed';
+import LoRaMeshAnimation from '@/components/LoRaMeshAnimation';
 
 type TabType = 'overview' | 'cctv' | 'heatmap' | 'blockchain' | 'anomalies';
 
@@ -112,7 +113,11 @@ export default function DashboardPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <HeatMap3D />
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-white mb-2">LoRa Mesh SOS Relay</h2>
+              <p className="text-slate-400">Watch the signal jump through the mesh network</p>
+            </div>
+            <LoRaMeshAnimation />
           </motion.div>
         )}
 
