@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 interface DotState {
   id: number;
-  color: 'safe' | 'warning' | 'danger';
+  color: 'safe' | 'warning' | 'critical';
 }
 
 export default function LiveFusionMonitor() {
@@ -32,18 +32,18 @@ export default function LiveFusionMonitor() {
           color: warningIndices.has(dot.id) ? 'warning' : 'safe'
         })));
 
-        // Step 3: After another 800ms, from warning dots, select 2-3 and turn them danger
+        // Step 3: After another 800ms, from warning dots, select 2-3 and turn them critical
         setTimeout(() => {
           const warningDots = Array.from(warningIndices);
-          const dangerCount = Math.floor(Math.random() * 2) + 2; // 2-3
-          const dangerIndices = new Set<number>();
-          while (dangerIndices.size < dangerCount && dangerIndices.size < warningDots.length) {
-            dangerIndices.add(warningDots[Math.floor(Math.random() * warningDots.length)]);
+          const criticalCount = Math.floor(Math.random() * 2) + 2; // 2-3
+          const criticalIndices = new Set<number>();
+          while (criticalIndices.size < criticalCount && criticalIndices.size < warningDots.length) {
+            criticalIndices.add(warningDots[Math.floor(Math.random() * warningDots.length)]);
           }
 
           setDots(prev => prev.map(dot => ({
             ...dot,
-            color: dangerIndices.has(dot.id) ? 'danger' : dot.color
+            color: criticalIndices.has(dot.id) ? 'critical' : dot.color
           })));
         }, 800);
       }, 500);
@@ -200,14 +200,14 @@ export default function LiveFusionMonitor() {
               <motion.div
                 key={dot.id}
                 className={`w-3 h-3 rounded-full ${
-                  dot.color === 'safe' ? 'bg-teal-500' :
+                  dot.color === 'safe' ? 'bg-blue-500' :
                   dot.color === 'warning' ? 'bg-amber-400' :
                   'bg-red-600'
                 }`}
-                animate={dot.color === 'danger' ? {
+                animate={dot.color === 'critical' ? {
                   scale: [1, 1.2, 1],
                 } : {}}
-                transition={dot.color === 'danger' ? {
+                transition={dot.color === 'critical' ? {
                   duration: 0.8,
                   repeat: Infinity,
                   ease: "easeInOut"

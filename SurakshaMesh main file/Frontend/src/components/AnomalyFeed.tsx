@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, AlertCircle, Info, TrendingUp } from 'lucide-react';
+import { AlertTriangle, AlertCircle, Shield, TrendingUp } from 'lucide-react';
 import { fetchFromApi } from '@/lib/api';
 
 // This interface now matches the backend's Incident model
 interface Anomaly {
   _id: string;
   createdAt: string; // ISO date string
-  severity: number | 'critical' | 'warning' | 'info';
+  severity: number | 'critical' | 'warning' | 'safe';
   type: string; // Changed from title to type to match API
   description: string;
   workerId?: string;
@@ -24,13 +24,13 @@ interface IncidentsApiResponse {
 const formatTime = (isoString: string) => new Date(isoString).toLocaleTimeString('en-US', { hour12: false });
 
 // Helper to convert numerical severity from the API to a string category
-const getSeverityCategory = (severity: Anomaly['severity']): 'critical' | 'warning' | 'info' => {
+const getSeverityCategory = (severity: Anomaly['severity']): 'critical' | 'warning' | 'safe' => {
   if (typeof severity === 'string') {
     return severity;
   }
-  if (severity > 0.8) return 'critical';
-  if (severity > 0.5) return 'warning';
-  return 'info';
+  if (severity > 0.7) return 'critical';
+  if (severity > 0.4) return 'warning';
+  return 'safe';
 };
 
 
@@ -49,12 +49,12 @@ const anomalyConfig = {
     text: 'text-amber-400',
     iconBg: 'bg-amber-500',
   },
-  info: {
-    icon: Info,
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/50',
-    text: 'text-blue-400',
-    iconBg: 'bg-blue-500',
+  safe: {
+    icon: Shield,
+    bg: 'bg-green-500/10',
+    border: 'border-green-500/50',
+    text: 'text-green-400',
+    iconBg: 'bg-green-500',
   },
 };
 
@@ -139,7 +139,9 @@ export default function AnomalyFeed({ fullView = false }: { fullView?: boolean }
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2 mb-1">
-                    <h4 className={`font-semibold ${config.text}`}>{anomaly.type}</h4>
+                    <h4 className={`font-semibold ${config.text} capitalize`}>
+                      {severityCategory}
+                    </h4>
                     <span className="text-xs text-slate-500 font-mono whitespace-nowrap">
                       {formatTime(anomaly.createdAt)}
                     </span>

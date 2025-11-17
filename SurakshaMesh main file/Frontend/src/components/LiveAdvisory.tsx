@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, AlertCircle, Info } from 'lucide-react';
+import { Volume2, AlertCircle, Shield } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 interface LiveAdvisoryProps {
@@ -10,32 +10,30 @@ interface LiveAdvisoryProps {
 
 const advisoryMessages = {
   safe: [
-    { hi: 'Sab theek hai', en: 'All good', icon: Info },
-    { hi: 'Kaam jaari rakho', en: 'Continue work', icon: Info },
-    { hi: 'Safety parameters normal hain', en: 'Safety parameters normal', icon: Info },
+    { hi: 'आप सुरक्षित हैं', en: 'You are safe', icon: Shield },
+    { hi: 'सभी पैरामीटर सामान्य हैं', en: 'All parameters are normal', icon: Shield },
+    { hi: 'काम जारी रखें', en: 'Continue with your work', icon: Shield },
   ],
   warning: [
-    { hi: 'Dhyan se kaam karo', en: 'Work carefully', icon: AlertCircle },
-    { hi: 'Paani piyo, bahut garmi hai', en: 'Drink water, high temperature', icon: AlertCircle },
-    { hi: 'Thoda rest lo', en: 'Take a short rest', icon: AlertCircle },
-    { hi: 'Heart rate badh raha hai', en: 'Heart rate increasing', icon: AlertCircle },
+    { hi: 'सावधान रहें', en: 'Be cautious', icon: AlertCircle },
+    { hi: 'उच्च तापमान का पता चला', en: 'High temperature detected', icon: AlertCircle },
+    { hi: 'असामान्य हृदय गति', en: 'Abnormal heart rate', icon: AlertCircle },
   ],
   critical: [
-    { hi: 'TURANT RUKHO! Helmet nahi hai', en: 'STOP NOW! No helmet detected', icon: AlertCircle },
-    { hi: 'KHATRE KA ZONE! Wapas jao', en: 'DANGER ZONE! Go back', icon: AlertCircle },
-    { hi: 'GAS LEAK! Bahar niklo abhi', en: 'GAS LEAK! Exit immediately', icon: AlertCircle },
-    { hi: 'EMERGENCY! SOS button dabao', en: 'EMERGENCY! Press SOS button', icon: AlertCircle },
+    { hi: 'खतरा! हेलमेट नहीं पहना', en: 'Danger! No helmet detected', icon: AlertCircle },
+    { hi: 'खतरनाक क्षेत्र', en: 'Hazardous area', icon: AlertCircle },
+    { hi: 'गैस रिसाव का पता चला', en: 'Gas leak detected', icon: AlertCircle },
   ],
 };
 
 const bgColors = {
-  safe: 'bg-green-500/10 border-green-500/50',
+  safe: 'bg-blue-500/10 border-blue-500/50',
   warning: 'bg-amber-500/10 border-amber-500/50',
   critical: 'bg-red-500/10 border-red-500/50',
 };
 
 const textColors = {
-  safe: 'text-green-400',
+  safe: 'text-blue-400',
   warning: 'text-amber-400',
   critical: 'text-red-400',
 };
@@ -74,7 +72,7 @@ export default function LiveAdvisory({ riskLevel }: LiveAdvisoryProps) {
           <div className="flex items-center gap-2 mb-3">
             <h3 className="text-lg font-semibold">Live Advisory</h3>
             <motion.div
-              className={`w-2 h-2 rounded-full ${riskLevel === 'safe' ? 'bg-green-500' : riskLevel === 'warning' ? 'bg-amber-500' : 'bg-red-500'}`}
+              className={`w-2 h-2 rounded-full ${riskLevel === 'safe' ? 'bg-blue-500' : riskLevel === 'warning' ? 'bg-amber-500' : 'bg-red-500'}`}
               animate={{
                 opacity: [1, 0.3, 1],
               }}
@@ -117,7 +115,7 @@ export default function LiveAdvisory({ riskLevel }: LiveAdvisoryProps) {
                 className={`h-1 rounded-full flex-1 ${
                   index === currentMessageIndex
                     ? riskLevel === 'safe'
-                      ? 'bg-green-500'
+                      ? 'bg-blue-500'
                       : riskLevel === 'warning'
                       ? 'bg-amber-500'
                       : 'bg-red-500'

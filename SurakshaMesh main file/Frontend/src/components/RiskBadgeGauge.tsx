@@ -9,14 +9,14 @@ interface RiskBadgeGaugeProps {
 
 const riskConfig = {
   safe: {
-    color: 'from-green-500 to-emerald-500',
-    bgColor: 'bg-green-500',
+    color: 'from-blue-500 to-teal-500',
+    bgColor: 'bg-blue-500',
     icon: Shield,
     label: 'SAFE',
     message: 'All systems normal',
     percentage: 95,
-    borderColor: 'border-green-500',
-    glowColor: 'shadow-green-500/50',
+    borderColor: 'border-blue-500',
+    glowColor: 'shadow-blue-500/50',
   },
   warning: {
     color: 'from-amber-500 to-orange-500',
@@ -149,13 +149,13 @@ export default function RiskBadgeGauge({ riskLevel }: RiskBadgeGaugeProps) {
             <div className="flex flex-wrap gap-2">
               {riskLevel === 'safe' && (
                 <>
-                  <span className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-sm text-green-400">
+                  <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/50 rounded-full text-sm text-blue-400">
                     PPE Compliant
                   </span>
-                  <span className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-sm text-green-400">
+                  <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/50 rounded-full text-sm text-blue-400">
                     Vitals Normal
                   </span>
-                  <span className="px-3 py-1 bg-green-500/20 border border-green-500/50 rounded-full text-sm text-green-400">
+                  <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/50 rounded-full text-sm text-blue-400">
                     Safe Zone
                   </span>
                 </>
