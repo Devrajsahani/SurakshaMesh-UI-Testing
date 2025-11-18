@@ -13,12 +13,22 @@ export default function WorkerPage() {
   const [riskLevel, setRiskLevel] = useState<'safe' | 'warning' | 'critical'>('warning');
   const [geminiReport, setGeminiReport] = useState<string | null>(null);
   const [isLoadingGemini, setIsLoadingGemini] = useState<boolean>(false);
-  const [geminiError, setGeminiError] = useState<string | null>(null); // For better error handling
+  const [geminiError, setGeminiError] = useState<string | null>(null);
+  const [lastRequestTime, setLastRequestTime] = useState<number>(0);
 
   const fetchGeminiReport = async () => {
+    // Rate limiting: Prevent requests more than once every 3 seconds
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime;
+    if (timeSinceLastRequest < 3000) {
+      setGeminiError(`Please wait ${Math.ceil((3000 - timeSinceLastRequest) / 1000)} seconds before making another request.`);
+      return;
+    }
+
     setIsLoadingGemini(true);
     setGeminiReport(null); // Clear previous report
     setGeminiError(null); // Clear previous error
+    setLastRequestTime(now);
 
     // --- HARDCODED WORKER DATA FOR DEMO ---
     // This data will be sent to the backend for Gemini's analysis.
@@ -127,22 +137,22 @@ export default function WorkerPage() {
         <div className="mt-8 p-4 bg-gray-800 rounded-lg shadow-md border border-blue-600">
           <h3 className="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
             <svg className="w-5 h-5 text-blue-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6.293 6.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414L11.414 10l2.293 2.293a1 1 0 01-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 10 6.293 7.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg> {/* Simple AI icon */}
-            Gemini AI Health Advisor
+            OpenAI AI Health Advisor
           </h3>
           <p className="text-sm text-gray-400 mb-4">
-            Consult Gemini for an AI-powered assessment of your current health status based on available data.
+            Consult OpenAI for an AI-powered assessment of your current health status based on available data.
           </p>
           <button
             onClick={fetchGeminiReport}
             disabled={isLoadingGemini}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {isLoadingGemini ? 'Consulting Gemini...' : 'Get Gemini Health Advisory'}
+            {isLoadingGemini ? 'Consulting AI...' : 'Get AI Health Advisory'}
           </button>
 
           {geminiReport && (
             <div className="mt-4 p-4 bg-gray-700 rounded-md text-sm text-gray-200 whitespace-pre-wrap border border-blue-500">
-              <h4 className="font-bold mb-2 text-blue-300">Gemini's Assessment:</h4>
+              <h4 className="font-bold mb-2 text-blue-300">AI Assessment:</h4>
               {geminiReport}
             </div>
           )}
@@ -151,7 +161,7 @@ export default function WorkerPage() {
             <div className="mt-4 p-4 bg-red-800 rounded-md text-sm text-white border border-red-500">
               <h4 className="font-bold mb-2">Error:</h4>
               {geminiError}
-              <p className="mt-2 text-xs">Please ensure `GEMINI_API_KEY` is set in `.env` and restart the server.</p>
+              <p className="mt-2 text-xs">Please ensure `OPENAI_API_KEY` is set in `.env.local` and restart the server.</p>
             </div>
           )}
         </div>
