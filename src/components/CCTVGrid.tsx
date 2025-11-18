@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Camera } from 'lucide-react';
 
 // Easy-to-find URL constant at the top of the file
-const LIVE_CCTV_URL = "https://your-localtunnel-url-goes-here.loca.lt/stream";
+const LIVE_CCTV_URL = "https://d559046a0b2baeaf040bd9ea2f4bd3cf.serveo.net";
 
 export default function CCTVGrid() {
   return (

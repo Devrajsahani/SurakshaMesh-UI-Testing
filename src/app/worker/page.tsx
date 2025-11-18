@@ -11,6 +11,60 @@ import SOSButton from '@/components/SOSButton';
 
 export default function WorkerPage() {
   const [riskLevel, setRiskLevel] = useState<'safe' | 'warning' | 'critical'>('warning');
+  const [geminiReport, setGeminiReport] = useState<string | null>(null);
+  const [isLoadingGemini, setIsLoadingGemini] = useState<boolean>(false);
+  const [geminiError, setGeminiError] = useState<string | null>(null); // For better error handling
+
+  const fetchGeminiReport = async () => {
+    setIsLoadingGemini(true);
+    setGeminiReport(null); // Clear previous report
+    setGeminiError(null); // Clear previous error
+
+    // --- HARDCODED WORKER DATA FOR DEMO ---
+    // This data will be sent to the backend for Gemini's analysis.
+    // Adjust these values as needed for different demo scenarios.
+    const workerHealthData = {
+      workerId: "405", 
+      name: "Ramesh K.",
+      age: 34,
+      vitals: {
+        heartRate: 95, 
+        bodyTemperature: 37.2, 
+        bloodPressure: "120/80"
+      },
+      environment: {
+        zone: "Zone 3: Storage",
+        temperature: 30, 
+        humidity: 60
+      },
+      riskScore: 35, 
+      recentIncidents: ["none"] // Example: "minor headache", "brief dizziness"
+    };
+    // --- END HARDCODED WORKER DATA ---
+
+    try {
+      const response = await fetch('/api/gemini-health-advisor', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(workerHealthData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch Gemini report');
+      }
+
+      const data = await response.json();
+      setGeminiReport(data.report);
+    } catch (error: any) { // Explicitly type error as 'any' for simpler handling
+      console.error('Error fetching Gemini report:', error);
+      setGeminiError(error.message || "Error generating report. Please check server logs.");
+    } finally {
+      setIsLoadingGemini(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 pb-24">
@@ -67,6 +121,42 @@ export default function WorkerPage() {
         >
           <HealthTabs />
         </motion.div>
+
+        {/* ... existing JSX for worker name, vitals, etc. ... */}
+
+        <div className="mt-8 p-4 bg-gray-800 rounded-lg shadow-md border border-blue-600">
+          <h3 className="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
+            <svg className="w-5 h-5 text-blue-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M6.293 6.293a1 1 0 011.414 0L10 8.586l2.293-2.293a1 1 0 111.414 1.414L11.414 10l2.293 2.293a1 1 0 01-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 10 6.293 7.707a1 1 0 010-1.414z" clipRule="evenodd"></path></svg> {/* Simple AI icon */}
+            Gemini AI Health Advisor
+          </h3>
+          <p className="text-sm text-gray-400 mb-4">
+            Consult Gemini for an AI-powered assessment of your current health status based on available data.
+          </p>
+          <button
+            onClick={fetchGeminiReport}
+            disabled={isLoadingGemini}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            {isLoadingGemini ? 'Consulting Gemini...' : 'Get Gemini Health Advisory'}
+          </button>
+
+          {geminiReport && (
+            <div className="mt-4 p-4 bg-gray-700 rounded-md text-sm text-gray-200 whitespace-pre-wrap border border-blue-500">
+              <h4 className="font-bold mb-2 text-blue-300">Gemini's Assessment:</h4>
+              {geminiReport}
+            </div>
+          )}
+
+          {geminiError && (
+            <div className="mt-4 p-4 bg-red-800 rounded-md text-sm text-white border border-red-500">
+              <h4 className="font-bold mb-2">Error:</h4>
+              {geminiError}
+              <p className="mt-2 text-xs">Please ensure `GEMINI_API_KEY` is set in `.env` and restart the server.</p>
+            </div>
+          )}
+        </div>
+
+        {/* ... rest of your PWA JSX .. */}
 
         {/* Debug Controls */}
         <motion.div

@@ -1,76 +1,53 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Check, ExternalLink, Lock } from 'lucide-react';
+import { Shield, Check, ExternalLink, Lock, AlertCircle } from 'lucide-react';
+import { fetchFromApi } from '@/lib/api';
 
+// This interface now reflects the expected data from your backend
 interface BlockchainReceipt {
-  id: string;
-  timestamp: string;
-  eventType: string;
-  worker: string;
-  hash: string;
-  block: number;
-  status: 'verified' | 'pending';
+  _id: string;
+  createdAt: string;
+  type: string; // eventType
+  workerId: string; // workerId
+  // workerName is not in the new API data, so we'll just use workerId
+  blockchainHash: string; // hash
+  // block number is not in the new API data, so we'll use a placeholder
+  anchorStatus: 'simulated' | 'verified' | 'pending'; // status
 }
 
-const receipts: BlockchainReceipt[] = [
-  {
-    id: 'TX-001',
-    timestamp: '2024-01-15 14:32:18',
-    eventType: 'Safety Alert Triggered',
-    worker: 'WRK-3456 (Priya Sharma)',
-    hash: '0x7f9fade1c0d57a7af66ab4ead79fade1c0d57a7af66ab4ead7c2c2eb7b11a91385',
-    block: 18432891,
-    status: 'verified',
-  },
-  {
-    id: 'TX-002',
-    timestamp: '2024-01-15 14:28:45',
-    eventType: 'PPE Violation Detected',
-    worker: 'WRK-2847 (Rajesh Kumar)',
-    hash: '0x9c5c8e3d8f7b6a5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c',
-    block: 18432876,
-    status: 'verified',
-  },
-  {
-    id: 'TX-003',
-    timestamp: '2024-01-15 14:25:12',
-    eventType: 'Zone Entry Logged',
-    worker: 'WRK-5621 (Vikram Reddy)',
-    hash: '0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b',
-    block: 18432854,
-    status: 'verified',
-  },
-  {
-    id: 'TX-004',
-    timestamp: '2024-01-15 14:22:33',
-    eventType: 'Health Metric Anomaly',
-    worker: 'WRK-2847 (Rajesh Kumar)',
-    hash: '0x3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c',
-    block: 18432839,
-    status: 'verified',
-  },
-  {
-    id: 'TX-005',
-    timestamp: '2024-01-15 14:18:56',
-    eventType: 'Safety Checkpoint',
-    worker: 'WRK-1923 (Amit Singh)',
-    hash: '0x5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e',
-    block: 18432821,
-    status: 'verified',
-  },
-  {
-    id: 'TX-006',
-    timestamp: '2024-01-15 14:32:22',
-    eventType: 'SOS Alert',
-    worker: 'WRK-3456 (Priya Sharma)',
-    hash: '0x7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f',
-    block: 18432892,
-    status: 'pending',
-  },
-];
+interface ReceiptsApiResponse {
+  count: number;
+  incidents: BlockchainReceipt[];
+}
+
+// Helper to format time from an ISO string
+const formatTime = (isoString: string) => new Date(isoString).toLocaleString('en-US', { hour12: false });
 
 export default function BlockchainReceipts() {
+  const [receipts, setReceipts] = useState<BlockchainReceipt[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getReceipts = async () => {
+      try {
+        // Fetching receipts from the backend. Assuming a similar API structure to AnomalyFeed.
+        const data = await fetchFromApi<ReceiptsApiResponse>('/dashboard/incidents?status=open&limit=50');
+        setReceipts(data.incidents);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch receipts');
+      } finally {
+        if (loading) setLoading(false);
+      }
+    };
+
+    getReceipts(); // Fetch immediately
+    const intervalId = setInterval(getReceipts, 10000); // Poll every 10 seconds
+    return () => clearInterval(intervalId);
+  }, [loading]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -97,10 +74,23 @@ export default function BlockchainReceipts() {
           </div>
         </div>
 
-        <div className="divide-y divide-slate-700">
+        <div className="divide-y divide-slate-700 max-h-[80vh] overflow-y-auto">
+          {loading && receipts.length === 0 && (
+            <div className="p-6 text-center text-slate-400">Loading blockchain records...</div>
+          )}
+          {error && (
+            <div className="p-6 text-center text-red-400 bg-red-500/10">
+              <AlertCircle className="inline-block mr-2" />
+              Could not load audit trail: {error}
+            </div>
+          )}
+          {receipts.length === 0 && !loading && !error && (
+            <div className="p-6 text-center text-slate-400">No blockchain records found.</div>
+          )}
+
           {receipts.map((receipt, index) => (
             <motion.div
-              key={receipt.id}
+              key={receipt._id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -109,8 +99,8 @@ export default function BlockchainReceipts() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-semibold text-lg">{receipt.eventType}</h3>
-                    {receipt.status === 'verified' ? (
+                    <h3 className="font-semibold text-lg">{receipt.type}</h3>
+                    {receipt.anchorStatus === 'verified' ? (
                       <div className="flex items-center gap-1 px-2 py-1 bg-emerald-500/20 border border-emerald-500/50 rounded-full text-emerald-400 text-xs">
                         <Check className="w-3 h-3" />
                         <span>Verified</span>
@@ -118,7 +108,7 @@ export default function BlockchainReceipts() {
                     ) : (
                       <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/20 border border-amber-500/50 rounded-full text-amber-400 text-xs animate-pulse">
                         <div className="w-2 h-2 bg-amber-500 rounded-full" />
-                        <span>Pending</span>
+                        <span>{receipt.anchorStatus === 'simulated' ? 'Simulated' : 'Pending'}</span>
                       </div>
                     )}
                   </div>
@@ -126,11 +116,11 @@ export default function BlockchainReceipts() {
                   <div className="grid md:grid-cols-2 gap-3 text-sm mb-3">
                     <div>
                       <p className="text-slate-400">Worker</p>
-                      <p className="font-mono text-white">{receipt.worker}</p>
+                      <p className="font-mono text-white">{receipt.workerId}</p>
                     </div>
                     <div>
                       <p className="text-slate-400">Timestamp</p>
-                      <p className="font-mono text-white">{receipt.timestamp}</p>
+                      <p className="font-mono text-white">{formatTime(receipt.createdAt)}</p>
                     </div>
                   </div>
 
@@ -139,7 +129,7 @@ export default function BlockchainReceipts() {
                       <p className="text-slate-400 mb-1">Transaction Hash</p>
                       <div className="flex items-center gap-2 bg-slate-900/50 rounded-lg p-2 border border-slate-700">
                         <code className="flex-1 text-blue-400 text-xs break-all font-mono">
-                          {receipt.hash}
+                          {receipt.blockchainHash}
                         </code>
                         <button className="text-blue-400 hover:text-blue-300 transition-colors flex-shrink-0">
                           <ExternalLink className="w-4 h-4" />
@@ -148,7 +138,7 @@ export default function BlockchainReceipts() {
                     </div>
                     <div className="flex items-center gap-2">
                       <p className="text-slate-400">Block:</p>
-                      <p className="font-mono text-blue-400">#{receipt.block}</p>
+                      <p className="font-mono text-blue-400">N/A</p>
                     </div>
                   </div>
                 </div>
