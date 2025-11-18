@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, ArrowLeft, Users, Camera, Map, FileText, AlertTriangle } from 'lucide-react';
+import { Shield, ArrowLeft, Users, Camera, Map, FileText, AlertTriangle, Brain } from 'lucide-react';
 import Link from 'next/link';
 import WorkerListTable from '@/components/WorkerListTable';
 import CCTVGrid from '@/components/CCTVGrid';
@@ -10,8 +10,9 @@ import HeatMap3D from '@/components/HeatMap3D';
 import BlockchainReceipts from '@/components/BlockchainReceipts';
 import AnomalyFeed from '@/components/AnomalyFeed';
 import LoRaMeshAnimation from '@/components/LoRaMeshAnimation';
+import SecondBrainPanel from '@/components/SecondBrainPanel';
 
-type TabType = 'overview' | 'cctv' | 'heatmap' | 'blockchain' | 'anomalies';
+type TabType = 'overview' | 'cctv' | 'heatmap' | 'blockchain' | 'anomalies' | 'secondBrain';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -20,6 +21,7 @@ export default function DashboardPage() {
     { id: 'overview' as TabType, label: 'Overview', icon: Users },
     { id: 'cctv' as TabType, label: 'CCTV', icon: Camera },
     { id: 'heatmap' as TabType, label: '3D Heatmap', icon: Map },
+    { id: 'secondBrain' as TabType, label: 'Second Brain', icon: Brain },
     { id: 'blockchain' as TabType, label: 'Blockchain', icon: FileText },
     { id: 'anomalies' as TabType, label: 'Anomalies', icon: AlertTriangle },
   ];
@@ -118,6 +120,17 @@ export default function DashboardPage() {
               <p className="text-slate-400">Watch the signal jump through the mesh network</p>
             </div>
             <LoRaMeshAnimation />
+          </motion.div>
+        )}
+
+        {activeTab === 'secondBrain' && (
+          <motion.div
+            key="secondBrain"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <SecondBrainPanel />
           </motion.div>
         )}
 
