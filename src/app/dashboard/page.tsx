@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, ArrowLeft, Users, Camera, Map, FileText, AlertTriangle, Brain } from 'lucide-react';
+import { Shield, ArrowLeft, Users, Camera, Map, FileText, AlertTriangle, Brain, Mountain } from 'lucide-react';
 import Link from 'next/link';
 import WorkerListTable from '@/components/WorkerListTable';
 import CCTVGrid from '@/components/CCTVGrid';
@@ -12,7 +12,7 @@ import AnomalyFeed from '@/components/AnomalyFeed';
 import LoRaMeshAnimation from '@/components/LoRaMeshAnimation';
 import SecondBrainPanel from '@/components/SecondBrainPanel';
 
-type TabType = 'overview' | 'cctv' | 'heatmap' | 'blockchain' | 'anomalies' | 'secondBrain';
+type TabType = 'overview' | 'cctv' | 'heatmap' | 'cave3d' | 'blockchain' | 'anomalies' | 'secondBrain';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
@@ -21,6 +21,7 @@ export default function DashboardPage() {
     { id: 'overview' as TabType, label: 'Overview', icon: Users },
     { id: 'cctv' as TabType, label: 'CCTV', icon: Camera },
     { id: 'heatmap' as TabType, label: '3D Heatmap', icon: Map },
+    { id: 'cave3d' as TabType, label: '3D Cave Model', icon: Mountain },
     { id: 'secondBrain' as TabType, label: 'Second Brain', icon: Brain },
     { id: 'blockchain' as TabType, label: 'Blockchain', icon: FileText },
     { id: 'anomalies' as TabType, label: 'Anomalies', icon: AlertTriangle },
@@ -120,6 +121,71 @@ export default function DashboardPage() {
               <p className="text-slate-400">Watch the signal jump through the mesh network</p>
             </div>
             <LoRaMeshAnimation />
+          </motion.div>
+        )}
+
+        {activeTab === 'cave3d' && (
+          <motion.div
+            key="cave3d"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-white mb-2">3D Cave Model</h2>
+              <p className="text-slate-400">Interactive 3D visualization of the work environment</p>
+            </div>
+            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg overflow-hidden">
+              <div className="sketchfab-embed-wrapper w-full h-[600px] md:h-[700px] lg:h-[800px]">
+                <iframe
+                  title="Ancien tunnel"
+                  frameBorder="0"
+                  allowFullScreen
+                  mozAllowFullScreen={true}
+                  webkitAllowFullScreen={true}
+                  allow="autoplay; fullscreen; xr-spatial-tracking"
+                  xr-spatial-tracking
+                  execution-while-out-of-viewport
+                  execution-while-not-rendered
+                  web-share
+                  src="https://sketchfab.com/models/a1945d7825ac457a84b1878302eb2d54/embed"
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="p-4 border-t border-slate-700">
+                <p style={{ fontSize: '13px', fontWeight: 'normal', margin: '5px 0', color: '#94a3b8' }}>
+                  <a
+                    href="https://sketchfab.com/3d-models/ancien-tunnel-a1945d7825ac457a84b1878302eb2d54?utm_medium=embed&utm_campaign=share-popup&utm_content=a1945d7825ac457a84b1878302eb2d54"
+                    target="_blank"
+                    rel="nofollow"
+                    style={{ fontWeight: 'bold', color: '#22d3ee', textDecoration: 'none' }}
+                    className="hover:text-cyan-400 transition-colors"
+                  >
+                    Ancien tunnel
+                  </a>
+                  {' by '}
+                  <a
+                    href="https://sketchfab.com/pierre391?utm_medium=embed&utm_campaign=share-popup&utm_content=a1945d7825ac457a84b1878302eb2d54"
+                    target="_blank"
+                    rel="nofollow"
+                    style={{ fontWeight: 'bold', color: '#22d3ee', textDecoration: 'none' }}
+                    className="hover:text-cyan-400 transition-colors"
+                  >
+                    pierre391
+                  </a>
+                  {' on '}
+                  <a
+                    href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=a1945d7825ac457a84b1878302eb2d54"
+                    target="_blank"
+                    rel="nofollow"
+                    style={{ fontWeight: 'bold', color: '#22d3ee', textDecoration: 'none' }}
+                    className="hover:text-cyan-400 transition-colors"
+                  >
+                    Sketchfab
+                  </a>
+                </p>
+              </div>
+            </div>
           </motion.div>
         )}
 
